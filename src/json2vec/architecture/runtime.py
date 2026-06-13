@@ -129,9 +129,7 @@ class ModelRuntime:
         return predictions, outgoing
 
     @staticmethod
-    def _root_encoding(
-        module: "Model", outgoing: dict[Address, Parcel]
-    ) -> torch.Tensor | None:
+    def _root_encoding(module: "Model", outgoing: dict[Address, Parcel]) -> torch.Tensor | None:
         depthwise = module.hyperparameters.depthwise
         if not depthwise or not depthwise[0]:
             return None
@@ -150,9 +148,7 @@ class ModelRuntime:
         *,
         strata: Strata,
     ) -> Output:
-        predictions, outgoing = ModelRuntime.forward(
-            module, batch, strata=strata, dataloader_idx=dataloader_idx
-        )
+        predictions, outgoing = ModelRuntime.forward(module, batch, strata=strata, dataloader_idx=dataloader_idx)
 
         if strata == Strata.predict:
             return Output(predictions=predictions)
