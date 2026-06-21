@@ -218,6 +218,7 @@ class Model(lit.LightningModule, Renderable):
         optimizer: OptimizerConfig | None = None,
         scheduler: SchedulerConfig | None = None,
         distributed_jd: DistributedJDMode = "off",
+        jacobian_epsilon: Rate = 0.0,
         **field_kwargs: TreeFieldInput,
     ) -> Self:
         """Build a model directly from schema fields.
@@ -268,6 +269,7 @@ class Model(lit.LightningModule, Renderable):
             optimizer=optimizer,
             scheduler=scheduler,
             distributed_jd=distributed_jd,
+            jacobian_epsilon=jacobian_epsilon,
         )
 
     @beartype
@@ -279,6 +281,7 @@ class Model(lit.LightningModule, Renderable):
         optimizer: OptimizerConfig | None = None,
         scheduler: SchedulerConfig | None = None,
         distributed_jd: DistributedJDMode = "off",
+        jacobian_epsilon: Rate = 0.0,
     ):
         super().__init__()
         if batch_size <= 0:
@@ -297,6 +300,7 @@ class Model(lit.LightningModule, Renderable):
         self._contract_scheduler: ContractScheduler = ContractScheduler()
         self._jd_aggregation = None
         self.incidence_matrix = None
+        self.jacobian_epsilon = jacobian_epsilon
 
         self._build()
         self._build_jd_components()
@@ -679,7 +683,7 @@ class Model(lit.LightningModule, Renderable):
                 losses,
                 params=incident_parameters,
                 incidence=self.incidence_matrix,
-                epsilon=0.01,
+                epsilon=self.jacobian_epsilon,
                 parallel_chunk_size=None,
             )
             has_jd_hooks = any(getattr(module, "_forward_hooks", None) for module in self._jd_aggregation.modules())
