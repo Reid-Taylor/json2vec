@@ -23,7 +23,12 @@ wandb/
 .vscode/
 .python-version
 
-private/
+arc.ipynb
+repro.ipynb
+*.log
+private/*.drawio
+private/*.png
+private/*.svg
 
 *.ckpt
 
